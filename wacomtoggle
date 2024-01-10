@@ -1,0 +1,29 @@
+#!/bin/bash
+
+create_toggle_token(){
+  if [ -f /tmp/wacomtoggle_token ]; then
+    rm /tmp/wacomtoggle_token
+
+  else
+    touch /tmp/wacomtoggle_token
+  fi
+}
+
+toggle_display(){
+  display_1_offset_x="1920"
+  display_1_offset_y="0"
+
+  stylus=$(xsetwacom --list | grep 'STYLUS' | awk {'print $8'} )
+  left=$(xrandr | grep "^DP-" | grep  " connected" | grep "+0+0" | awk {'print $4'})
+  right=$(xrandr | grep "^DP-" | grep  " connected" | grep "+$display_1_offset_x+$display_1_offset_y" | awk {'print $3'})
+ 
+
+  if [ -f /tmp/wacomtoggle_token ]; then
+    xsetwacom set "$stylus" MapToOutput "$right"
+  else
+    xsetwacom set "$stylus" MapToOutput "$left"
+  fi
+}
+
+create_toggle_token
+toggle_display
